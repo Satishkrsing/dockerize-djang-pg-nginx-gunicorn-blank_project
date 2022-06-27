@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  django_web:
+    image: django-web-app
+    volumes:
+      - ./static:/static
+      - ./media:/media
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    # container_name: django_web_app
+  postgres_db:
+    image: postgres
+    restart: always
+    environment:
+    - POSTGRES_DB=postgres
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=postgres
+    container_name: postgres_db2
+    # command: -p 5434
+    # env_file:
+    #   - web/.env
+    expose:
+      - 5435
+    ports:
+      - "5435:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data/
+  nginx:
+    build: ./nginx
+    volumes:
+      - ./static:/static
+    ports:
+      - "80:80"
+    depends_on:
+      - django_web
+
+volumes:
+  static:
+  media:
+  postgres_data:
+  
